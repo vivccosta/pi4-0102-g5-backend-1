@@ -6,7 +6,7 @@
 | **Fronteira** | Banco |
 | **Quem chama** | Backend 1 (único módulo que lê e grava nesta coleção) |
 | **Quem responde** | Banco de Dados (MongoDB) |
-| **Atende** | E1, E5 |
+| **Atende** | E5 |
 | **Como chamar** | Operações na coleção `emissores`, chave `emissorId` |
 
 ## Entrada e Saída

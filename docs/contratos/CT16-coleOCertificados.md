@@ -6,7 +6,7 @@
 | **Fronteira** | Banco |
 | **Quem chama** | Backend 1 (único módulo que lê e grava nesta coleção) |
 | **Quem responde** | Banco de Dados (MongoDB) |
-| **Atende** | E2, E4, E6 |
+| **Atende** | E4, E6 |
 | **Como chamar** | Operações na coleção `certificados`, chave `certificadoId` |
 
 ## Entrada e Saída
