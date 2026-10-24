@@ -6,7 +6,7 @@
 | **Fronteira** | HTTP |
 | **Quem chama** | Frontend |
 | **Quem responde** | Backend 1 (API) |
-| **Atende** | E3, E7 |
+| **Atende** | E3 |
 | **Como chamar** | `POST /api/certificados/validar` (JSON / Multipart via HTTP) |
 
 ## Entrada
