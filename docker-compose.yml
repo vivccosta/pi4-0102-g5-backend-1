@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Banco de Dados (MongoDB associado ao Backend 1)
+  mongodb:
+    image: mongo:7.0
+    container_name: timbro-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    networks:
+      - timbro-net
+
+  # Backend 1 - Java (Spring Boot) + Regras de Negócio e API
+  backend1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: timbro-backend1
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/timbro?authSource=admin
+      - BLOCKCHAIN_WS_URL=${BLOCKCHAIN_WS_URL}
+    depends_on:
+      - mongodb
+      - backend2
+    networks:
+      - timbro-net
+
+  # Backend 2 - Python (FastAPI) + Motor Blockchain / SHA-256
+  backend2:
+    build:
+      context: ../pi4-0102-g5-backend-2
+      dockerfile: Dockerfile
+    container_name: timbro-backend2
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - timbro-net
+
+  # Frontend - React + TypeScript
+  frontend:
+    build:
+      context: ../pi4-0102-g5-frontend
+      dockerfile: Dockerfile
+    container_name: timbro-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+      - REACT_APP_WS_URL=ws://localhost:8080
+    depends_on:
+      - backend1
+    networks:
+      - timbro-net
+
+volumes:
+  mongo_data:
+
+networks:
+  timbro-net:
+    driver: bridge
