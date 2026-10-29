@@ -14,6 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private SecurityFilter securityFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -34,6 +37,7 @@ public class SecurityConfig {
                     // Qualquer outra rota (registro, histórico, revogação, ativação) exigirá autenticação
                     req.anyRequest().authenticated();
                 })
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
