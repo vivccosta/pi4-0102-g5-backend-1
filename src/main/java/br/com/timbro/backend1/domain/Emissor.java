@@ -16,4 +16,5 @@ public class Emissor {
     private String email;
     private String senha;
     private StatusEmissor status;
+    private String perfil;
 }
