@@ -34,6 +34,9 @@ public class SecurityConfig {
                     // CT9: A validação pública do certificado pode ser acessada por qualquer pessoa
                     req.requestMatchers(HttpMethod.POST, "/api/certificados/validar").permitAll();
                     
+                    // Apenas administradores podem acessar rotas que começam com /api/admin
+                    req.requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR");
+
                     // Qualquer outra rota (registro, histórico, revogação, ativação) exigirá autenticação
                     req.anyRequest().authenticated();
                 })
