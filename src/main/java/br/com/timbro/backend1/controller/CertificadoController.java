@@ -191,6 +191,61 @@ public class CertificadoController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de validação inválido.");
         }
     }
+    
+    @PostMapping("/{certificadoId}/revogar")
+    public ResponseEntity<RevogarCertificadoResponseDTO> revogarCertificado(@PathVariable Integer certificadoId) throws Exception {
+        
+        // 1. Busca o certificado no banco (CT16)
+        var certificadoOpt = certificadoRepository.findById(certificadoId);
+        if (certificadoOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Certificado não encontrado.");
+        }
+
+        Certificado cert = certificadoOpt.get();
+
+        // 2. Trava de segurança: Garante que apenas o emissor dono pode revogar
+        Emissor emissorLogado = (Emissor) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!cert.getEmissorId().equals(emissorLogado.getEmissorId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para revogar este certificado.");
+        }
+
+        // 3. Valida se já não está revogado (Erro do CT19)
+        if (cert.getStatus() == StatusCertificado.INVALIDO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este certificado já se encontra revogado.");
+        }
+
+        // 4. Prepara a chamada WebSocket para a Blockchain (CT20)
+        String idRequisicao = UUID.randomUUID().toString();
+        InvalidarHashWS pedidoWS = new InvalidarHashWS(cert.getHash(), idRequisicao);
+        
+        CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
+        
+        try {
+            parceiroBlockchain.envie(pedidoWS);
+            
+            // Aguarda a confirmação do motor em Python
+            Comunicado resposta = futuro.get(10, TimeUnit.SECONDS);
+
+            if (resposta instanceof RetornoInvalidacaoWS retornoWS) {
+                if (!retornoWS.isSucesso()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A blockchain rejeitou a revogação do hash.");
+                }
+
+                // 5. Atualiza o status no MongoDB (CT16)
+                cert.setStatus(StatusCertificado.INVALIDO);
+                certificadoRepository.save(cert);
+
+                // 6. Responde sucesso para o Frontend (CT19)
+                return ResponseEntity.ok(new RevogarCertificadoResponseDTO(true, "Certificado revogado com sucesso."));
+            } else {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Resposta inesperada da Blockchain.");
+            }
+
+        } catch (Exception e) {
+            correlacao.liberarEspera(idRequisicao, null);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro de comunicação com a Blockchain: " + e.getMessage());
+        }
+    }
 
     // Métodos auxiliares para montar o DTO de resposta limpo (CT14)
     private ResponseEntity<ValidacaoCertificadoResponseDTO> responderValido(Certificado cert) {
