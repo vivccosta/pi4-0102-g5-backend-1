@@ -12,4 +12,5 @@ public class GravarCertificadoWS extends Comunicado {
     private String curso;
     private String dataConclusao;
     private Integer cargaHoraria;
+    private String idRequisicao;
 }

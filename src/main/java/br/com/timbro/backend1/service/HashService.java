@@ -20,7 +20,7 @@ public class HashService {
         // 4. Converte o array de bytes para uma String Hexadecimal legível
         StringBuilder hexString = new StringBuilder();
         
-        // Adiciona o prefixo "0x" padronizado nos contratos da sua especificação (ex: CT9)
+        // Adiciona o prefixo "0x" padronizado nos contratos da especificação (ex: CT9)
         hexString.append("0x"); 
         
         for (byte b : hashBytes) {
