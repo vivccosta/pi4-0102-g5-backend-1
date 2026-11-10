@@ -21,6 +21,9 @@ public class EmissorController {
     @Autowired
     private CertificadoRepository certificadoRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     // CT15: Retorna o histórico de certificados do emissor logado
     @GetMapping("/{emissorId}/certificados")
     public ResponseEntity<List<CertificadoResumoDTO>> listarCertificados(@PathVariable Integer emissorId) {
@@ -53,5 +56,29 @@ public class EmissorController {
 
         // 5. Retorna a lista completa com Status 200 
         return ResponseEntity.ok(resposta);
+    }
+
+    @PostMapping("/cadastrar")
+    public ResponseEntity<String> cadastrarEmissor(@RequestBody @Valid br.com.timbro.backend1.dto.CadastroEmissorRequestDTO request) {
+        
+        // Verifica se o email ou CNPJ já existem no banco para evitar duplicidade
+        if (emissorRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado.");
+        }
+
+        Emissor novoEmissor = new Emissor();
+        novoEmissor.setNome(request.getNome());
+        novoEmissor.setEmail(request.getEmail());
+        novoEmissor.setCnpjCpf(request.getCnpjCpf());
+        
+        // Criptografa a senha antes de salvar no banco
+        novoEmissor.setSenha(passwordEncoder.encode(request.getSenha()));
+        
+        novoEmissor.setPerfil("EMISSOR");
+        novoEmissor.setStatus(br.com.timbro.backend1.domain.StatusEmissor.PENDENTE); // Fica aguardando o Admin
+
+        emissorRepository.save(novoEmissor);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso. Aguardando aprovação do administrador.");
     }
 }

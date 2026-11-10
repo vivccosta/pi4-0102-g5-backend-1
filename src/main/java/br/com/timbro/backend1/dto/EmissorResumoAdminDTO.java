@@ -9,6 +9,6 @@ public class EmissorResumoAdminDTO {
     private Integer emissorId;
     private String nome;
     private String email;
-    private String cnpj;
+    private String cnpjCpf;
     private String status;
 }
