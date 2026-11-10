@@ -33,6 +33,14 @@ public class TratadoraDeMensagensWS extends Thread {
                     correlacao.liberarEspera(String.valueOf(retorno.getBloco()), retorno);
                     parceiroPython.receba();
                 }
+                else if(comunicado instanceof RetornoInvalidacaoWS) {
+                    RetornoInvalidacaoWS retorno = (RetornoInvalidacaoWS) comunicado;
+
+                    // Usa o idRequisicao para acordar a thread exata do Controller HTTP
+                    correlacao.liberarEspera(retorno.getIdRequisicao(), retorno);
+
+                    parceiroPython.receba(); // Limpa o buffer
+                }
                 else if (comunicado instanceof ComunicadoDeDesligamento) {
                     break; // Se o servidor caiu, sai do loop
                 }

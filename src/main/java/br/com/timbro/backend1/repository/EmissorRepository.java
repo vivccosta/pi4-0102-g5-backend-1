@@ -7,4 +7,7 @@ import java.util.Optional;
 public interface EmissorRepository extends MongoRepository<Emissor, Integer> {
     // Esse método customizado será usado para buscar o emissor no login
     Optional<Emissor> findByEmail(String email);
+
+    // Busca o emissor pelo status
+    List<Emissor> findByStatus(StatusEmissor status);
 }

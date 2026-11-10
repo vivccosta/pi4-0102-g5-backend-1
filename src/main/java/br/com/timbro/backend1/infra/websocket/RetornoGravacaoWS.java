@@ -8,4 +8,5 @@ import lombok.EqualsAndHashCode;
 public class RetornoGravacaoWS extends Comunicado {
     private String hashTransacao;
     private boolean status;
+    private String idRequisicao;
 }
