@@ -38,6 +38,9 @@ public class CertificadoController {
     @Autowired
     private GerenciadorDeCorrelacao correlacao;
 
+    @Autowired 
+    private br.com.timbro.backend1.service.HashService hashService;
+
     @PostMapping("/registrar")
     public ResponseEntity<RegistroCertificadoResponseDTO> registrarCertificado(
             @RequestBody @Valid RegistroCertificadoRequestDTO request) {
@@ -109,5 +112,110 @@ public class CertificadoController {
             correlacao.liberarEspera(idRequisicao, null);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro de comunicação com a Blockchain: " + e.getMessage());
         }
+    }
+
+    // Rota pública (foi liberada no SecurityConfig)
+    @PostMapping(value = "/validar", consumes = {"multipart/form-data"})
+    public ResponseEntity<ValidacaoCertificadoResponseDTO> validarCertificado(
+            @RequestParam("tipoValidacao") String tipoValidacao,
+            @RequestParam(value = "arquivoPdf", required = false) org.springframework.web.multipart.MultipartFile arquivoPdf,
+            @RequestParam(value = "chaveAutenticacao", required = false) String chaveAutenticacao) throws Exception {
+
+        if (tipoValidacao == null || tipoValidacao.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O tipo de validação é obrigatório.");
+        }
+
+        // CENÁRIO A: Validação via PDF (CT9, CT10, CT11)
+        if (tipoValidacao.equalsIgnoreCase("PDF")) {
+            if (arquivoPdf == null || arquivoPdf.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arquivo PDF não fornecido.");
+            }
+
+            // 1. Gera o hash SHA-256 do arquivo no próprio Java
+            String hashGerado = hashService.gerarHashSha256(arquivoPdf);
+
+            // 2. Prepara o pedido WS (lembre-se do idRequisicao alinhado com o Caio!)
+            String idRequisicao = UUID.randomUUID().toString();
+            ConsultarHashWS consultaWS = new ConsultarHashWS(hashGerado); 
+            // *Nota: Assumindo que você adicionou o getIdRequisicao() e setIdRequisicao() no ConsultarHashWS
+
+            CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
+            parceiroBlockchain.envie(consultaWS);
+
+            // 3. Aguarda resposta da Blockchain
+            Comunicado resposta = futuro.get(10, TimeUnit.SECONDS);
+
+            if (resposta instanceof RetornoConsultaWS retornoWS) {
+                if (retornoWS.isEncontrado()) {
+                    // Busca os metadados no banco para enriquecer a resposta (nome do aluno, curso, etc)
+                    var certificadoOpt = certificadoRepository.findByHash(hashGerado);
+                    
+                    if (certificadoOpt.isPresent()) {
+                        Certificado cert = certificadoOpt.get();
+                        // Verifica se não foi revogado
+                        if (cert.getStatus() == StatusCertificado.INVALIDO) {
+                            return responderInvalido("Certificado revogado.");
+                        }
+                        return responderValido(cert);
+                    }
+                    return responderValidoBasico(hashGerado); // Existe na blockchain, mas sumiu do nosso banco
+                } else {
+                    return responderInvalido("O documento fornecido não possui registro autêntico.");
+                }
+            } else {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Falha na consulta à Blockchain.");
+            }
+        } 
+        
+        // CENÁRIO B: Validação via Número de Série (CT12, CT13)
+        else if (tipoValidacao.equalsIgnoreCase("CHAVE")) {
+            if (chaveAutenticacao == null || chaveAutenticacao.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chave de autenticação não fornecida.");
+            }
+
+            // Busca direto no banco de dados (CT12)
+            var certificadoOpt = certificadoRepository.findByHash(chaveAutenticacao);
+
+            if (certificadoOpt.isPresent()) {
+                Certificado cert = certificadoOpt.get();
+                if (cert.getStatus() == StatusCertificado.INVALIDO) {
+                    return responderInvalido("Certificado revogado.");
+                }
+                return responderValido(cert);
+            } else {
+                return responderInvalido("Chave de autenticação desconhecida.");
+            }
+        } 
+        
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de validação inválido.");
+        }
+    }
+
+    // Métodos auxiliares para montar o DTO de resposta limpo (CT14)
+    private ResponseEntity<ValidacaoCertificadoResponseDTO> responderValido(Certificado cert) {
+        return ResponseEntity.ok(ValidacaoCertificadoResponseDTO.builder()
+                .valido(true)
+                .mensagem("Certificado válido")
+                .nomeAluno(cert.getNomeAluno())
+                .curso(cert.getCurso())
+                .dataConclusao(cert.getDataConclusao().toString())
+                .hash(cert.getHash())
+                .build());
+    }
+
+    private ResponseEntity<ValidacaoCertificadoResponseDTO> responderValidoBasico(String hash) {
+        return ResponseEntity.ok(ValidacaoCertificadoResponseDTO.builder()
+                .valido(true)
+                .mensagem("Certificado válido na Blockchain (sem metadados locais)")
+                .hash(hash)
+                .build());
+    }
+
+    private ResponseEntity<ValidacaoCertificadoResponseDTO> responderInvalido(String motivo) {
+        return ResponseEntity.ok(ValidacaoCertificadoResponseDTO.builder()
+                .valido(false)
+                .mensagem("Certificado inválido: " + motivo)
+                .build());
     }
 }
