@@ -56,42 +56,43 @@ public class Parceiro {
         }
     }
 
-    // O Spring WebSocket chama esse método quando o Python responde
+    // O Spring WebSocket vai chamar esse método quando o Python responder
     public void adicionarMensagemDoPython(String jsonTexto) throws Exception {
-        if (jsonTexto == null) {
-            throw new Exception("O Json não foi recebido");
-        }
         
-        JsonNode rootNode = mapeadorJson.readTree(jsonTexto);
+        // 1. Lê a String JSON como uma "árvore"
+        com.fasterxml.jackson.databind.JsonNode noh = mapeadorJson.readTree(jsonTexto);
+        
+        // 2. Verifica se a mensagem recebida tem a etiqueta "evento"
+        if (noh.has("evento")) {
+            String evento = noh.get("evento").asText();
+            Comunicado comunicadoConvertido = null;
 
-        int stringCount = 0;
-        int intCount = 0;
-        int totalFields = rootNode.size();
-
-        Iterator> fields = rootNode.fields();
-        while (fields.hasNext()) {
-            JsonNode valorNode = fields.next().getValue();
-                
-            if (valorNode.isTextual()) {
-                stringCount++;
-            } else if (valorNode.isInt()) {
-                intCount++;
+            // 3. Usa a etiqueta do evento para rotear para o DTO correto
+            switch (evento) {
+                case "retornoGravacaoBlockchain": 
+                    comunicadoConvertido = mapeadorJson.treeToValue(noh, RetornoGravacaoWS.class);
+                    break;
+                    
+                case "retornoConsultaBlockchain": 
+                    comunicadoConvertido = mapeadorJson.treeToValue(noh, RetornoConsultaWS.class);
+                    break;
+                    
+                case "retornoInvalidacaoBlockchain": 
+                    comunicadoConvertido = mapeadorJson.treeToValue(noh, RetornoInvalidacaoWS.class);
+                    break;
+                    
+                default:
+                    System.out.println("Aviso: Evento desconhecido recebido do Python: " + evento);
+                    break;
             }
-        }
 
-        Comunicado comunicadoConvertido = null;
-
-        if (totalFields == 1 && stringCount == 1) {
-            comunicadoConvertido = mapeadorJson.readValue(jsonTexto, ConsultarHashWS.class);
-        } else if (totalFields == 4 && stringCount == 3 && intCount == 1) {
-            comunicadoConvertido = mapeadorJson.readValue(jsonTexto, GravarCertificadoWS.class);
+            // 4. Se a conversão deu certo, coloca na fila!
+            // Isso faz acordar a TratadoraDeMensagensWS que estava travada no método espie()
+            if (comunicadoConvertido != null) {
+                mensagensRecebidas.put(comunicadoConvertido);
+            }
         } else {
-            throw new Exception("O JSON não corresponde a nenhum dos formatos esperados (nem Consulta, nem Gravação).");
-        }
-
-        // Adicionando na fila de mensagens recebidas
-        if (comunicadoConvertido != null) {
-            mensagensRecebidas.put(comunicadoConvertido);
+            System.out.println("Aviso: JSON recebido sem o campo 'evento'. Ignorando...");
         }
     }
 }

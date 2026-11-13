@@ -6,7 +6,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class RetornoInvalidacaoWS extends Comunicado {
-    private boolean sucesso;
-    private String hashRevogado;
-    private String idRequisicao;
+    private boolean sucesso; 
+    private String hashRevogado; 
+    private String idRequisicao; 
+    private String evento; 
 }
