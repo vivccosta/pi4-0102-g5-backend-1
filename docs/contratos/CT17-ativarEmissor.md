@@ -1,27 +1,29 @@
 # CT17: ativarEmissor
 
-## Informações Gerais
 | Linha | Valor |
 | :--- | :--- |
-| **Fronteira** | HTTP |
-| **Quem chama** | Frontend |
-| **Quem responde** | Backend 1 |
-| **Atende** | E5 |
-| **Como chamar** | `PATCH /api/emissores/{emissorId}/status` |
+| Fronteira | HTTP |
+| Quem chama | Frontend |
+| Quem responde | Backend 1 |
+| Atende | E5 |
+| Como chamar | PATCH /api/emissores/{emissorId}/status |
 
-## Entrada
+Entrada:
+
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `emissorId` | inteiro | sim | 102 |
-| `status` | texto | sim | ativo (enum: pendente, ativo, bloqueado) |
+| :--- | :--- | :--- | :--- |
+| emissorId | inteiro | sim | 102 |
+| status | um de: pendente, ativo, bloqueado | sim | ativo |
 
-## Saída
+Saída:
+
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `sucesso` | booleano | sim | true |
-| `mensagem` | texto | sim | Emissor ativado com sucesso |
+| :--- | :--- | :--- | :--- |
+| sucesso | booleano | sim | true |
+| mensagem | texto | sim | Emissor ativado com sucesso |
 
-## Erros mapeados
+Erros:
+
 | Quando | O que volta |
 | :--- | :--- |
 | O emissorId não existe no sistema | HTTP 404 Not Found (Emissor não encontrado) |

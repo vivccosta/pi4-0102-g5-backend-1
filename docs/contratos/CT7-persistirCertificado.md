@@ -1,30 +1,36 @@
 # CT7: persistirCertificado
 
-## Informações Gerais
 | Linha | Valor |
 | :--- | :--- |
-| **Fronteira** | Banco |
-| **Quem chama** | Backend 1 (API) |
-| **Quem responde** | Banco de Dados |
-| **Atende** | E2 |
-| **Como chamar** | Comando SQL / NoSQL (Inserção na coleção de certificados) |
+| Fronteira | Banco |
+| Quem chama | Backend 1 (API) |
+| Quem responde | Banco de Dados |
+| Atende | E2 |
+| Como chamar | Comando SQL INSERT INTO certificados (...) |
 
-## Entrada
+Entrada:
+
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `nomeAluno` | texto | sim | Maria Silva Santos |
-| `curso` | texto | sim | Engenharia de Software |
-| `dataConclusao` | texto | sim | 2026-06-30 |
-| `cargaHoraria` | inteiro | sim | 120 |
-| `hash` | texto | sim | 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069 |
+| :--- | :--- | :--- | :--- |
+| emissorId | inteiro | sim | 102 |
+| nomeAluno | texto | sim | Maria Silva Santos |
+| cpfAluno | Inteiro | sim | 123.456.789-10 |
+| curso | texto | sim | Engenharia de Software |
+| cargaHoraria | inteiro | sim | 120 |
+| dataConclusao | texto | sim | 2026-06-30 |
+| hash | texto | sim | 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069 |
+| status | texto | sim | valido |
+| dataEmissao | texto | sim | 2026-06-30 |
 
-## Saída
+Saída:
+
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `id` | inteiro | sim | 501 |
-| `linhasAfetadas` | inteiro | sim | 1 |
+| :--- | :--- | :--- | :--- |
+| id | inteiro | sim | 501 |
+| linhasAfetadas | inteiro | sim | 1 |
 
-## Erros mapeados
+Erros:
+
 | Quando | O que volta |
 | :--- | :--- |
 | Violação de chave única (hash já existe) | Unique Constraint Violation |
