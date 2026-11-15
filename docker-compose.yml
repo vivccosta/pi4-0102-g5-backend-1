@@ -1,7 +1,7 @@
-version: '3.8'
 
 services:
-  # Banco de Dados (MongoDB associado ao Backend 1)
+
+  # Banco de dados MongoDB local
   mongodb:
     image: mongo:7.0
     container_name: timbro-mongodb
@@ -16,7 +16,7 @@ services:
     networks:
       - timbro-net
 
-  # Backend 1 - Java (Spring Boot) + Regras de Negócio e API
+  # Backend 1 - Java Spring Boot
   backend1:
     build:
       context: .
@@ -26,15 +26,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/timbro?authSource=admin
-      - BLOCKCHAIN_WS_URL=${BLOCKCHAIN_WS_URL}
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/timbro?authSource=admin
+      BLOCKCHAIN_WS_URL: ${BLOCKCHAIN_WS_URL}
     depends_on:
       - mongodb
       - backend2
     networks:
       - timbro-net
 
-  # Backend 2 - Python (FastAPI) + Motor Blockchain / SHA-256
+  # Backend 2 - Python FastAPI
   backend2:
     build:
       context: ../pi4-0102-g5-backend-2
@@ -46,7 +46,7 @@ services:
     networks:
       - timbro-net
 
-  # Frontend - React + TypeScript
+  # Frontend - React
   frontend:
     build:
       context: ../pi4-0102-g5-frontend
@@ -56,16 +56,18 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - REACT_APP_API_URL=http://localhost:8080
-      - REACT_APP_WS_URL=ws://localhost:8080
+      REACT_APP_API_URL: http://localhost:8080
+      REACT_APP_WS_URL: ws://localhost:8080
     depends_on:
       - backend1
     networks:
       - timbro-net
 
+# Volume para persistir os dados do MongoDB
 volumes:
   mongo_data:
 
+# Rede compartilhada entre os contêineres
 networks:
   timbro-net:
     driver: bridge
