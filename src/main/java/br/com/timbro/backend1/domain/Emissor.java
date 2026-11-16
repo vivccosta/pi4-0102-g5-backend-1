@@ -12,7 +12,7 @@ public class Emissor {
     private Integer emissorId; 
     
     private String nome;
-    private String cnpjCpf;
+    private String cnpj;
     private String email;
     private String senha;
     private StatusEmissor status;

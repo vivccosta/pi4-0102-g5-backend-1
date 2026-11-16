@@ -55,6 +55,7 @@ public class CertificadoController {
                 request.getDataConclusao(),
                 request.getCargaHoraria()
         );
+        pedidoWS.setIdRequisicao(idRequisicao);
 
         // Criamos um ID único para esta requisição para que a Tratadora saiba quem acordar
         String idRequisicao = UUID.randomUUID().toString();
@@ -137,7 +138,6 @@ public class CertificadoController {
             // 2. Prepara o pedido WS (lembre-se do idRequisicao alinhado com o Caio!)
             String idRequisicao = UUID.randomUUID().toString();
             ConsultarHashWS consultaWS = new ConsultarHashWS(hashGerado); 
-            // *Nota: Assumindo que você adicionou o getIdRequisicao() e setIdRequisicao() no ConsultarHashWS
 
             CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
             parceiroBlockchain.envie(consultaWS);

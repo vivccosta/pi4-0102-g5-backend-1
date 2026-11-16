@@ -69,7 +69,7 @@ public class EmissorController {
         Emissor novoEmissor = new Emissor();
         novoEmissor.setNome(request.getNome());
         novoEmissor.setEmail(request.getEmail());
-        novoEmissor.setCnpjCpf(request.getCnpjCpf());
+        novoEmissor.setCnpj(request.getCnpj());
         
         // Criptografa a senha antes de salvar no banco
         novoEmissor.setSenha(passwordEncoder.encode(request.getSenha()));
