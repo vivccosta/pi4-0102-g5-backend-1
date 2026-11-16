@@ -30,7 +30,7 @@ public class TratadoraDeMensagensWS extends Thread {
                 else if (comunicado instanceof RetornoConsultaWS) {
                     RetornoConsultaWS retorno = (RetornoConsultaWS) comunicado;
                     // Usa o próprio hash como ID para liberar
-                    correlacao.liberarEspera(String.valueOf(retorno.getBloco()), retorno);
+                    correlacao.liberarEspera(retorno.getIdRequisicao(), retorno);
                     parceiroPython.receba();
                 }
                 else if(comunicado instanceof RetornoInvalidacaoWS) {

@@ -40,7 +40,7 @@ class AdminControllerTest {
         Emissor emissorFalso = new Emissor();
         emissorFalso.setEmissorId(10);
         emissorFalso.setNome("Faculdade Teste");
-        emissorFalso.setCnpjCpf("11111111111");
+        emissorFalso.setCnpj("11111111111");
         emissorFalso.setStatus(StatusEmissor.PENDENTE);
 
         Mockito.when(emissorRepository.findByStatus(StatusEmissor.PENDENTE)).thenReturn(List.of(emissorFalso));

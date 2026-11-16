@@ -42,6 +42,25 @@ public class AdminController {
         return ResponseEntity.ok(resposta);
     }
 
+    // Rota que retorna todos os emissores (o Frontend chama de GET /api/admin/emissores)
+    @GetMapping
+    public ResponseEntity<List<EmissorResumoAdminDTO>> listarTodosEmissores() {
+        
+        List<Emissor> todos = emissorRepository.findAll();
+
+        List<EmissorResumoAdminDTO> resposta = todos.stream().map(emissor ->
+                new EmissorResumoAdminDTO(
+                        emissor.getEmissorId(),
+                        emissor.getNome(),
+                        emissor.getEmail(),
+                        emissor.getCnpj(), 
+                        emissor.getStatus().name()
+                )
+        ).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resposta);
+    }
+
     // 2. Altera o status de um emissor (Aprova ou Bloqueia)
     @PutMapping("/{emissorId}/status")
     public ResponseEntity<String> alterarStatus(
