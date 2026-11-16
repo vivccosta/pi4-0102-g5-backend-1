@@ -1,26 +1,28 @@
 # CT13: retornoConsultaBanco
 
-## Informações Gerais
 | Linha | Valor |
 | :--- | :--- |
-| **Fronteira** | Banco |
-| **Quem chama** | Banco de Dados |
-| **Quem responde** | Backend 1 (API) |
-| **Atende** | E3 |
-| **Como chamar** | Retorno da query / busca executada |
+| Fronteira | Banco |
+| Quem chama | Banco de Dados |
+| Quem responde | Backend 1 (API) |
+| Atende | E3 |
+| Como chamar | Retorno da query SQL executada |
 
-## Entrada
+Entrada:
+
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `resultadoQuery`| cursor/lista| sim | ResultSet com dados ou vazio |
+| :--- | :--- | :--- | :--- |
+| resultadoQuery | cursor / lista | sim | ResultSet com dados ou vazio |
 
-## Saída
+Saída:
+
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `registrosEncontrados` | inteiro | sim | 1 |
-| `dadosCertificado` | objeto | não | `{ "id": 501, "nomeAluno": "Maria Silva Santos", ... }` |
+| :--- | :--- | :--- | :--- |
+| registrosEncontrados | inteiro | sim | 1 |
+| dadosCertificado | objeto | não | { "id": 501, "nomeAluno": "Maria Silva Santos", ... } |
 
-## Erros mapeados
+Erros:
+
 | Quando | O que volta |
 | :--- | :--- |
-| Queda de conexão durante leitura | Exceção de conexão interrompida |
+| Queda de conexão durante leitura | SQLException de conexão interrompida |

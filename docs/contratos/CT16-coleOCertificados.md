@@ -1,30 +1,28 @@
-# CT16: Coleção certificados
+# CT16: certificados
 
-## Informações Gerais
 | Linha | Valor |
 | :--- | :--- |
-| **Fronteira** | Banco |
-| **Quem chama** | Backend 1 (único módulo que lê e grava nesta coleção) |
-| **Quem responde** | Banco de Dados (MongoDB) |
-| **Atende** | E4, E6 |
-| **Como chamar** | Operações na coleção `certificados`, chave `certificadoId` |
+| Fronteira | Banco |
+| Quem chama | Backend 1, que é o único módulo que lê e grava nesta coleção |
+| Quem responde | Banco |
+| Atende | E2, E4, E6 |
+| Como chamar | Coleção certificados, chave certificadoId |
 
-## Entrada e Saída
-*(Os campos gravados são os mesmos lidos nas consultas)*
+Entrada e saída: os campos gravados são os mesmos campos lidos.
 
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `certificadoId` | inteiro | sim | 405 |
-| `emissorId` | inteiro | sim | 102 |
-| `nomeAluno` | texto | sim | João Pedro Alves |
-| `curso` | texto | sim | Excel Avançado |
-| `cargaHoraria` | inteiro | sim | 40 |
-| `dataConclusao` | data | sim | 2026-10-10 |
-| `hash` | texto | sim | 0x7f83b1657ff1... |
-| `status` | texto | sim | valido (enum: valido, invalido) |
-| `dataEmissao` | data e hora | sim | 2026-10-14T09:30:00 |
+| :--- | :--- | :--- | :--- |
+| nomeAluno | texto | sim | Maria Silva Santos |
+| cpfAluno | Inteiro | sim | 123.456.789-10 |
+| curso | texto | sim | Engenharia de Software |
+| cargaHoraria | inteiro | sim | 120 |
+| dataConclusao | texto | sim | 2026-06-30 |
+| hash | texto | sim | 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069 |
+| status | texto | sim | valido |
+| dataEmissao | texto | sim | 2026-06-30 |
 
-## Erros mapeados
+Erros:
+
 | Quando | O que volta |
 | :--- | :--- |
 | Falha de conexão com o MongoDB | O banco recusa a gravação/leitura |

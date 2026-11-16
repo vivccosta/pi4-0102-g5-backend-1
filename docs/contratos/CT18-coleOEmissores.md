@@ -1,27 +1,27 @@
-# CT18: Coleção emissores
+# CT18: emissores
 
-## Informações Gerais
 | Linha | Valor |
 | :--- | :--- |
-| **Fronteira** | Banco |
-| **Quem chama** | Backend 1 (único módulo que lê e grava nesta coleção) |
-| **Quem responde** | Banco de Dados (MongoDB) |
-| **Atende** | E5 |
-| **Como chamar** | Operações na coleção `emissores`, chave `emissorId` |
+| Fronteira | Banco |
+| Quem chama | Backend 1, que é o único módulo que lê e grava nesta coleção |
+| Quem responde | Banco |
+| Atende | E1, E5 |
+| Como chamar | Coleção emissores, chave emissorId |
 
-## Entrada e Saída
-*(Os campos gravados são os mesmos lidos nas consultas)*
+Entrada e saída: os campos gravados são os mesmos campos lidos.
 
 | Campo | Tipo | Obrigatório | Exemplo |
-| :--- | :--- | :---: | :--- |
-| `emissorId` | inteiro | sim | 102 |
-| `nome` | texto | sim | Escola de Profissões |
-| `cnpjCpf` | texto | sim | 12345678000199 |
-| `email` | texto | sim | contato@escola.com.br |
-| `senha` | texto | sim | $2a$12$e8k... |
-| `status` | texto | sim | ativo (enum: pendente, ativo, bloqueado) |
+| :--- | :--- | :--- | :--- |
+| emissorId | inteiro | sim | 102 |
+| nome | texto | sim | Escola de Profissões |
+| cnpj | texto | sim | 12345678000199 |
+| email | texto | sim | contato@escola.com.br |
+| senha | texto | sim | $2a$12$e8k... |
+| status | um de: pendente, ativo, bloqueado | sim | ativo |
+| perfil | texto | não | EMISSOR |
 
-## Erros mapeados
+Erros:
+
 | Quando | O que volta |
 | :--- | :--- |
 | Falha de conexão com o MongoDB | O banco recusa a gravação/leitura |
