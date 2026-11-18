@@ -28,6 +28,8 @@ services:
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/timbro?authSource=admin
       BLOCKCHAIN_WS_URL: ${BLOCKCHAIN_WS_URL}
+      APP_SECURITY_JWT_SECRET: ${JWT_SECRET}
+      APP_SECURITY_JWT_EXPIRATION: 86400000
     depends_on:
       - mongodb
       - backend2
