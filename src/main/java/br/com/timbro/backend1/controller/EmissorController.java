@@ -4,6 +4,7 @@ import br.com.timbro.backend1.domain.Certificado;
 import br.com.timbro.backend1.domain.Emissor;
 import br.com.timbro.backend1.dto.CertificadoResumoDTO;
 import br.com.timbro.backend1.repository.CertificadoRepository;
+import br.com.timbro.backend1.repository.EmissorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,9 @@ public class EmissorController {
 
     @Autowired
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmissorRepository emissorRepository;
 
     // CT15: Retorna o histórico de certificados do emissor logado
     @GetMapping("/{emissorId}/certificados")
@@ -77,6 +81,10 @@ public class EmissorController {
         novoEmissor.setPerfil("EMISSOR");
         novoEmissor.setStatus(br.com.timbro.backend1.domain.StatusEmissor.PENDENTE); // Fica aguardando o Admin
 
+        // Gera um Integer positivo aleatório para o MongoDB aceitar o @Id
+        int idGerado = java.util.concurrent.ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+        novoEmissor.setEmissorId(idGerado);
+        
         emissorRepository.save(novoEmissor);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso. Aguardando aprovação do administrador.");

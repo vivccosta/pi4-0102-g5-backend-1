@@ -60,6 +60,9 @@ public class CertificadoController {
         // Criamos um ID único para esta requisição para que a Tratadora saiba quem acordar
         String idRequisicao = UUID.randomUUID().toString();
 
+        // Integra o UUID no objeto
+        pedidoWS.setIdRequisicao(idRequisicao);
+
         // 3. Registra a espera no Guarda-Volumes
         CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
 
@@ -86,6 +89,10 @@ public class CertificadoController {
                 novoCertificado.setHash(retornoWS.getHashTransacao());
                 novoCertificado.setStatus(StatusCertificado.VALIDO);
                 novoCertificado.setDataEmissao(LocalDateTime.now());
+
+                // Gera um Integer positivo aleatório para o MongoDB aceitar o @Id
+                int idGerado = java.util.concurrent.ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+                novoCertificado.setCertificadoId(idGerado);
 
                 // 7. Persiste no MongoDB (CT7)
                 try {
@@ -135,9 +142,10 @@ public class CertificadoController {
             // 1. Gera o hash SHA-256 do arquivo no próprio Java
             String hashGerado = hashService.gerarHashSha256(arquivoPdf);
 
-            // 2. Prepara o pedido WS (lembre-se do idRequisicao alinhado com o Caio!)
+            // 2. Prepara o pedido WS 
             String idRequisicao = UUID.randomUUID().toString();
             ConsultarHashWS consultaWS = new ConsultarHashWS(hashGerado); 
+            consultaWS.setIdRequisicao(idRequisicao);
 
             CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
             parceiroBlockchain.envie(consultaWS);
