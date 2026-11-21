@@ -4,20 +4,34 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Iterator;
 import java.util.Map;
 
+@Component
 public class Parceiro {
 
-    private final WebSocketSession sessao;
+    private WebSocketSession sessao;
     private final ObjectMapper mapeadorJson;
     private final Object mutEx = new Object();
 
     // Fila que simula a espera da rede
     private final BlockingQueue<Comunicado> mensagensRecebidas = new LinkedBlockingQueue<>();
+
+    // Construtor que o Spring vai usar ao subir o servidor
+    @Autowired
+    public Parceiro() {
+        this.mapeadorJson = new ObjectMapper();
+    }
+
+    // Método para injetar a sessão quando o WebSocket conectar
+    public void setSessao(WebSocketSession sessao) {
+        this.sessao = sessao;
+    }
 
     public Parceiro(WebSocketSession sessao, ObjectMapper mapeadorJson) throws Exception {
 
