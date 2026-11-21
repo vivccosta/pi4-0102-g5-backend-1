@@ -1,6 +1,8 @@
 package br.com.timbro.backend1.repository;
 
 import br.com.timbro.backend1.domain.Emissor;
+import java.util.List;
+import br.com.timbro.backend1.domain.StatusEmissor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 

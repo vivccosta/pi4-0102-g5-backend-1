@@ -9,4 +9,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class ConsultarHashWS extends Comunicado {
     private String hash;
+    private String idRequisicao;
+
+    public ConsultarHashWS(String hash) {
+        this.hash = hash;
+    }
 }

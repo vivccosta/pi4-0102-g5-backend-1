@@ -5,11 +5,7 @@ import br.com.timbro.backend1.domain.Emissor;
 import br.com.timbro.backend1.domain.StatusCertificado;
 import br.com.timbro.backend1.dto.RegistroCertificadoRequestDTO;
 import br.com.timbro.backend1.dto.RegistroCertificadoResponseDTO;
-import br.com.timbro.backend1.infra.websocket.Comunicado;
-import br.com.timbro.backend1.infra.websocket.GerenciadorDeCorrelacao;
-import br.com.timbro.backend1.infra.websocket.GravarCertificadoWS;
-import br.com.timbro.backend1.infra.websocket.Parceiro;
-import br.com.timbro.backend1.infra.websocket.RetornoGravacaoWS;
+import br.com.timbro.backend1.infra.websocket.*;
 import br.com.timbro.backend1.repository.CertificadoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import br.com.timbro.backend1.dto.ValidacaoCertificadoResponseDTO;
+import br.com.timbro.backend1.dto.RevogarCertificadoResponseDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,25 +43,22 @@ public class CertificadoController {
     public ResponseEntity<RegistroCertificadoResponseDTO> registrarCertificado(
             @RequestBody @Valid RegistroCertificadoRequestDTO request) {
         
-        // 1. Pega o emissor que foi autenticado pelo filtro JWT
+        // Pega o emissor que foi autenticado pelo filtro JWT
         Emissor emissorLogado = (Emissor) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // 2. Prepara o DTO para enviar via WebSocket (CT5)
+        // 1. Declara o UUID primeiro
+        String idRequisicao = UUID.randomUUID().toString();
+
+        // 2. Passa os 5 argumentos direto no construtor (não precisa mais do .setIdRequisicao)
         GravarCertificadoWS pedidoWS = new GravarCertificadoWS(
                 request.getNomeAluno(),
                 request.getCurso(),
                 request.getDataConclusao(),
-                request.getCargaHoraria()
+                request.getCargaHoraria(),
+                idRequisicao
         );
-        pedidoWS.setIdRequisicao(idRequisicao);
 
-        // Criamos um ID único para esta requisição para que a Tratadora saiba quem acordar
-        String idRequisicao = UUID.randomUUID().toString();
-
-        // Integra o UUID no objeto
-        pedidoWS.setIdRequisicao(idRequisicao);
-
-        // 3. Registra a espera no Guarda-Volumes
+        // 3. Registra a espera
         CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
 
         try {

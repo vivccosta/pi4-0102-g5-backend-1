@@ -5,13 +5,14 @@ import br.com.timbro.backend1.domain.StatusEmissor;
 import br.com.timbro.backend1.repository.EmissorRepository;
 import br.com.timbro.backend1.infra.security.SecurityConfig;
 import br.com.timbro.backend1.infra.security.SecurityFilter;
-import br.com.timbro.backend1.service.TokenService;
+import br.com.timbro.backend1.infra.security.TokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,9 +30,9 @@ class AdminControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean private EmissorRepository emissorRepository;
-    @MockBean private TokenService tokenService;
-    @MockBean private SecurityFilter securityFilter;
+    @MockitoBean private EmissorRepository emissorRepository;
+    @MockitoBean private TokenService tokenService;
+    @MockitoBean private SecurityFilter securityFilter;
 
     @Test
     @WithMockUser(roles = "ADMINISTRADOR") // Simula um Token de Admin

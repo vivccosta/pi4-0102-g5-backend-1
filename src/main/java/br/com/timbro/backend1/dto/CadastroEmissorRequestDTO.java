@@ -2,6 +2,7 @@ package br.com.timbro.backend1.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
