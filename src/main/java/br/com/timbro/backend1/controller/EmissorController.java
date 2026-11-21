@@ -2,6 +2,7 @@ package br.com.timbro.backend1.controller;
 
 import br.com.timbro.backend1.domain.Certificado;
 import br.com.timbro.backend1.domain.Emissor;
+import jakarta.validation.Valid;
 import br.com.timbro.backend1.dto.CertificadoResumoDTO;
 import br.com.timbro.backend1.repository.CertificadoRepository;
 import br.com.timbro.backend1.repository.EmissorRepository;

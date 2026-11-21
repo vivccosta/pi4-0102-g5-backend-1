@@ -1,5 +1,5 @@
 # Estágio 1: Build da aplicação usando o Maven (Software que cria build em estágios)
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copia o pom.xml e baixa as dependências (otimiza o cache do Docker)

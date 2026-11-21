@@ -10,9 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -30,10 +30,10 @@ class CertificadoControllerTest {
     private MockMvc mockMvc;
 
     // Atributos necessários para o Controlle rodar
-    @MockBean private CertificadoRepository certificadoRepository;
-    @MockBean private Parceiro parceiroBlockchain;
-    @MockBean private GerenciadorDeCorrelacao correlacao;
-    @MockBean private HashService hashService;
+    @MockitoBean private CertificadoRepository certificadoRepository;
+    @MockitoBean private Parceiro parceiroBlockchain;
+    @MockitoBean private GerenciadorDeCorrelacao correlacao;
+    @MockitoBean private HashService hashService;
 
     @Test
     @DisplayName("Deve retornar certificado válido ao pesquisar por chave existente no banco")
