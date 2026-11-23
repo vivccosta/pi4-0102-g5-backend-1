@@ -19,7 +19,9 @@ public class BlockchainWebSocketConfig {
     @Autowired
     private Parceiro parceiro;
 
-    @Autowired(required = false)
+    @Autowired
+    private GerenciadorDeCorrelacao correlacao;
+
     private TratadoraDeMensagensWS tratadora;
 
     // Inicia a conexão websocket
@@ -34,7 +36,8 @@ public class BlockchainWebSocketConfig {
                     parceiro.setSessao(session);
                     System.out.println("[WS] Conectado com sucesso ao Backend 2 em: " + blockchainWsUrl);
 
-                    if (tratadora != null && !tratadora.isAlive()) {
+                    if (tratadora == null || !tratadora.isAlive()) {
+                        tratadora = new TratadoraDeMensagensWS(parceiro, correlacao);
                         tratadora.start();
                     }
                 }
@@ -43,6 +46,11 @@ public class BlockchainWebSocketConfig {
                 protected void handleTextMessage(WebSocketSession session, TextMessage message) {
                     String payload = message.getPayload();
                     System.out.println("[WS] Mensagem recebida do Backend 2: " + payload);
+                    try {
+                        parceiro.adicionarMensagemDoPython(payload);
+                    } catch (Exception e) {
+                        System.err.println("[WS] Erro ao despachar mensagem recebida: " + e.getMessage());
+                    }
                 }
             };
 
