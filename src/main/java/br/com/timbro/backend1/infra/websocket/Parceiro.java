@@ -1,5 +1,6 @@
 package br.com.timbro.backend1.infra.websocket;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode; 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.TextMessage;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.Iterator;
-import java.util.Map;
 
 @Component
 public class Parceiro {
@@ -19,13 +18,14 @@ public class Parceiro {
     private final ObjectMapper mapeadorJson;
     private final Object mutEx = new Object();
 
-    // Fila que simula a espera da rede
+    // Fila que armazena mensagens recebidas da rede
     private final BlockingQueue<Comunicado> mensagensRecebidas = new LinkedBlockingQueue<>();
 
     // Construtor que o Spring vai usar ao subir o servidor
     @Autowired
     public Parceiro() {
         this.mapeadorJson = new ObjectMapper();
+        this.mapeadorJson.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     // Método para injetar a sessão quando o WebSocket conectar
@@ -34,7 +34,6 @@ public class Parceiro {
     }
 
     public Parceiro(WebSocketSession sessao, ObjectMapper mapeadorJson) throws Exception {
-
         if (sessao == null) {
             throw new Exception("A sessão web não foi iniciada");
         }
@@ -43,6 +42,7 @@ public class Parceiro {
         }
         this.sessao = sessao;
         this.mapeadorJson = mapeadorJson;
+        this.mapeadorJson.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     // Pega o DTO do Java, vira JSON e manda pro Python
@@ -51,17 +51,25 @@ public class Parceiro {
         
         // Exclusão Mútua: Apenas uma thread envia por vez
         synchronized (mutEx) {
-            sessao.sendMessage(new TextMessage(json));
+            if (this.sessao != null && this.sessao.isOpen()) {
+                sessao.sendMessage(new TextMessage(json));
+            } else {
+                throw new IllegalStateException("Conexão WebSocket com Backend 2 não está disponível.");
+            }
         }
     }
 
     // A thread espiã fica travada aqui até chegar algo na fila
-    public Comunicado espie() throws Exception {
+    public synchronized Comunicado espie() throws Exception {
+        while (mensagensRecebidas.isEmpty()) {
+            wait();
+        }
         return mensagensRecebidas.peek(); // Só olha quem é o primeiro da fila
     }
 
-    public void receba() throws Exception {
+    public synchronized void receba() throws Exception {
         mensagensRecebidas.take(); // Remove o primeiro da fila
+        notifyAll();
     }
 
     public void adeus() throws Exception {
@@ -72,9 +80,8 @@ public class Parceiro {
 
     // O Spring WebSocket vai chamar esse método quando o Python responder
     public void adicionarMensagemDoPython(String jsonTexto) throws Exception {
-        
         // 1. Lê a String JSON como uma "árvore"
-        com.fasterxml.jackson.databind.JsonNode noh = mapeadorJson.readTree(jsonTexto);
+        JsonNode noh = mapeadorJson.readTree(jsonTexto);
         
         // 2. Verifica se a mensagem recebida tem a etiqueta "evento"
         if (noh.has("evento")) {
@@ -96,17 +103,19 @@ public class Parceiro {
                     break;
                     
                 default:
-                    System.out.println("Aviso: Evento desconhecido recebido do Python: " + evento);
+                    System.out.println("[WS] Aviso: Evento desconhecido recebido do Python: " + evento);
                     break;
             }
 
-            // 4. Se a conversão deu certo, coloca na fila!
-            // Isso faz acordar a TratadoraDeMensagensWS que estava travada no método espie()
+            // 4. Se a conversão deu certo, coloca na fila e notifica a thread espiã
             if (comunicadoConvertido != null) {
-                mensagensRecebidas.put(comunicadoConvertido);
+                synchronized (this) {
+                    mensagensRecebidas.put(comunicadoConvertido);
+                    notifyAll();
+                }
             }
         } else {
-            System.out.println("Aviso: JSON recebido sem o campo 'evento'. Ignorando...");
+            System.out.println("[WS] Aviso: JSON recebido sem o campo 'evento'. Ignorando...");
         }
     }
 }
