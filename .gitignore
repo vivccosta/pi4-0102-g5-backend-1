@@ -1,4 +1,6 @@
 .env
+user_tests
+user_tests.*
 
 HELP.md
 target/

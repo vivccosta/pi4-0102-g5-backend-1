@@ -1,6 +1,6 @@
 package br.com.timbro.backend1.infra.websocket;
 
-import br.com.timbro.backend1.infra.websocket.Comunicado;
+//import br.com.timbro.backend1.infra.websocket.Comunicado;
 
 // Criação de uma thread dedicada a escutar
 public class TratadoraDeMensagensWS extends Thread {
