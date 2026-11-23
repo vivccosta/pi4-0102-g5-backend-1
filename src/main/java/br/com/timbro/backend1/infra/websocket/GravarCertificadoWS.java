@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +18,7 @@ public class GravarCertificadoWS extends Comunicado {
     private String dataConclusao;
     private Integer cargaHoraria;
     private String idRequisicao;
+    private String hash;
 
     public GravarCertificadoWS(String nomeAluno, String curso, String dataConclusao, Integer cargaHoraria, String idRequisicao) {
         this.evento = "gravarCertificado";
