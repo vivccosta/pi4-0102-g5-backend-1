@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 @RestController
 @RequestMapping("/api/certificados")
@@ -57,6 +59,20 @@ public class CertificadoController {
                 request.getCargaHoraria(),
                 idRequisicao
         );
+
+        // 2.5. Gera e define o hash SHA-256 
+        try {
+            String dadosParaHash = request.getNomeAluno() + "|" + request.getCurso() + "|" + request.getDataConclusao() + "|" + request.getCargaHoraria();
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(dadosParaHash.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder("0x");
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            pedidoWS.setHash(hexString.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar hash do certificado", e);
+        }
 
         // 3. Registra a espera
         CompletableFuture<Comunicado> futuro = correlacao.registrarEspera(idRequisicao);
