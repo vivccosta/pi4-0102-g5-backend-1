@@ -12,23 +12,23 @@ Entrada:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
-| status | booleano | sim | true |
-| dadosValidados | objeto | não | { "nomeAluno": "Maria Silva Santos", "curso": "Engenharia de Software" } |
+| valido | booleano | sim | true |
+| dadosValidados | objeto | não | { "nomeAluno": "Maria Silva Santos", "curso": "Engenharia de Software", "dataConclusao": "2026-06-30", "hash": "0x7f83..." } |
 
 Saída:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
-| nomeAluno | texto | sim | Maria Silva Santos |
-| cpfAluno | Inteiro | sim | 123.456.789-10 |
-| curso | texto | sim | Engenharia de Software |
-| cargaHoraria | inteiro | sim | 120 |
-| dataConclusao | texto | sim | 2026-06-30 |
-| status | texto | sim | valido |
+| valido | booleano | sim | true |
+| mensagem | texto | sim | Certificado válido |
+| nomeAluno | texto | não | Maria Silva Santos |
+| curso | texto | não | Engenharia de Software |
+| dataConclusao | texto | não | 2026-06-30 |
+| hash | texto | não | 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069 |
 
 Erros:
 
 | Quando | O que volta |
 | :--- | :--- |
-| Certificado inválido / não encontrado | HTTP 200/404 com corpo { "valido": false, "mensagem": "Certificado inválido" } |
+| Certificado inválido, revogado ou não encontrado | HTTP 200 com corpo { "valido": false, "mensagem": "Certificado inválido: ..." } |
 | Erro de processamento interno | HTTP 500 Internal Server Error |

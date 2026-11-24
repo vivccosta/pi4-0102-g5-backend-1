@@ -6,23 +6,23 @@
 | Quem chama | Banco de Dados |
 | Quem responde | Backend 1 (API) |
 | Atende | E3 |
-| Como chamar | Retorno da query SQL executada |
+| Como chamar | Retorno da consulta na coleção certificados do MongoDB |
 
 Entrada:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
-| resultadoQuery | cursor / lista | sim | ResultSet com dados ou vazio |
+| resultadoConsulta | objeto / Optional | sim | Documento Certificado ou Optional.empty |
 
 Saída:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
-| registrosEncontrados | inteiro | sim | 1 |
-| dadosCertificado | objeto | não | { "id": 501, "nomeAluno": "Maria Silva Santos", ... } |
+| encontrado | booleano | sim | true |
+| dadosCertificado | objeto | não | { "certificadoId": 501, "nomeAluno": "Maria Silva Santos", "curso": "Engenharia de Software", "status": "VALIDO" } |
 
 Erros:
 
 | Quando | O que volta |
 | :--- | :--- |
-| Queda de conexão durante leitura | SQLException de conexão interrompida |
+| Queda de conexão durante leitura | Exceção de conexão com o MongoDB interrompida |

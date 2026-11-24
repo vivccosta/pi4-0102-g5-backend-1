@@ -6,7 +6,7 @@
 | Quem chama | Backend 1 |
 | Quem responde | Banco de Dados |
 | Atende | E1 |
-| Como chamar | Consulta SQL / Query no banco |
+| Como chamar | Consulta na coleção emissores do MongoDB pelo campo email (Spring Data MongoDB) |
 
 Entrada:
 
@@ -21,11 +21,13 @@ Saída:
 | emissorId | inteiro | sim | 102 |
 | nome | texto | sim | Carlos Eduardo |
 | email | texto | sim | emissor@universidade.edu.br |
+| senha | texto | sim | $2a$10$9FBNSUyQzF1PmO6RLI1snu... |
+| status | texto | sim | ATIVO |
 | perfil | texto | sim | EMISSOR |
 
 Erros:
 
 | Quando | O que volta |
 | :--- | :--- |
-| Registro não encontrado no banco | Retorno vazio (NULL / 0 linhas encontradas) |
-| Falha de conexão com o banco | Exceção de conexão recusada / Timeout |
+| Registro não encontrado no banco | Retorno vazio (Optional.empty / documento não encontrado) |
+| Falha de conexão com o banco | Exceção de conexão com o MongoDB / Timeout |

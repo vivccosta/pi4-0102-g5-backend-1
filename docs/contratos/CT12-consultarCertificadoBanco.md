@@ -6,7 +6,7 @@
 | Quem chama | Backend 1 (API) |
 | Quem responde | Banco de Dados |
 | Atende | E3 |
-| Como chamar | Comando SQL SELECT * FROM certificados WHERE hash = ? |
+| Como chamar | Consulta na coleção certificados do MongoDB pelo campo hash (Spring Data MongoDB) |
 
 Entrada:
 
@@ -18,11 +18,11 @@ Saída:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
-| status | texto | sim | valido |
+| documentoCertificado | objeto | não | Documento contendo certificadoId, emissorId, nomeAluno, curso, cargaHoraria, dataConclusao, hash, status e dataEmissao |
 
 Erros:
 
 | Quando | O que volta |
 | :--- | :--- |
-| Chave não cadastrada no banco | Registro vazio (NULL / 0 linhas retornadas) |
-| Falha de conexão com a base | Connection Refused / Timeout |
+| Chave não cadastrada no banco | Retorno vazio (Optional.empty / documento não encontrado) |
+| Falha de conexão com o MongoDB | Exceção de conexão / Timeout |

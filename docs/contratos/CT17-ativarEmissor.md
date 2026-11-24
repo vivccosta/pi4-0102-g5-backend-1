@@ -6,14 +6,14 @@
 | Quem chama | Frontend |
 | Quem responde | Backend 1 |
 | Atende | E5 |
-| Como chamar | PATCH /api/emissores/{emissorId}/status |
+| Como chamar | PUT /api/admin/emissores/{emissorId}/status |
 
 Entrada:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
 | emissorId | inteiro | sim | 102 |
-| status | um de: pendente, ativo, bloqueado | sim | ativo |
+| novoStatus | um de: PENDENTE, ATIVO | sim | ATIVO |
 
 Saída:
 

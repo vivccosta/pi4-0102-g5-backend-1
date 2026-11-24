@@ -13,11 +13,9 @@ Entrada:
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
 | nomeAluno | texto | sim | Maria Silva Santos |
-| cpfAluno | Inteiro | sim | 123.456.789-10 |
 | curso | texto | sim | Engenharia de Software |
 | cargaHoraria | inteiro | sim | 120 |
 | dataConclusao | texto | sim | 2026-06-30 |
-| hash | texto | sim | 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069 |
 
 Saída:
 
@@ -32,5 +30,5 @@ Erros:
 | Quando | O que volta |
 | :--- | :--- |
 | Emissor não autenticado | HTTP 401 Unauthorized / Token inválido |
-| Campos obrigatórios ausentes | HTTP 400 Bad Request com validação dos campos |
-| Falha interna ao processar | HTTP 500 Internal Server Error |
+| Campos obrigatórios ausentes ou inválidos | HTTP 400 Bad Request com validação dos campos |
+| Falha interna ao processar ou timeout na blockchain | HTTP 500 Internal Server Error |
