@@ -1,4 +1,4 @@
-# CT18: emissores
+# CT18: coleOemissores
 
 | Linha | Valor |
 | :--- | :--- |
@@ -17,7 +17,7 @@ Entrada e saída: os campos gravados são os mesmos campos lidos.
 | cnpj | texto | sim | 12345678000199 |
 | email | texto | sim | contato@escola.com.br |
 | senha | texto | sim | $2a$12$e8k... |
-| status | um de: pendente, ativo, bloqueado | sim | ativo |
+| status | um de: pendente, ativo | sim | ativo |
 | perfil | texto | não | EMISSOR |
 
 Erros:

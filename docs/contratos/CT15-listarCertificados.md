@@ -24,17 +24,15 @@ Objeto certificado:
 
 | Campo | Tipo | Obrigatório | Exemplo |
 | :--- | :--- | :--- | :--- |
+| certificadoId | inteiro | sim | 501 |
 | nomeAluno | texto | sim | Maria Silva Santos |
-| cpfAluno | Inteiro | sim | 123.456.789-10 |
-| curso | texto | sim | Engenharia de Software |
-| cargaHoraria | inteiro | sim | 120 |
-| dataConclusao | texto | sim | 2026-06-30 |
 | hash | texto | sim | 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069 |
-| status | texto | sim | valido |
-| dataEmissao | texto | sim | 2026-06-30 |
+| dataEmissao | texto | sim | 2026-06-30T12:13:00 |
+| status | texto | sim | VALIDO |
 
 Erros:
 
 | Quando | O que volta |
 | :--- | :--- |
-| O emissorId não existe | HTTP 404 Not Found (Emissor não encontrado) |
+| Emissor não autenticado | HTTP 401 Unauthorized |
+| emissorId da URL não corresponde ao emissor autenticado | HTTP 403 Forbidden |
