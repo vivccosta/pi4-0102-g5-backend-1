@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AdminController.class)
-@Import({SecurityConfig.class}) // Importa a configuração real de segurança para testar as portas
+@Import({SecurityConfig.class, SecurityFilter.class}) // Importa a configuração real de segurança para testar as portas
 class AdminControllerTest {
 
     @Autowired
@@ -32,7 +32,6 @@ class AdminControllerTest {
 
     @MockitoBean private EmissorRepository emissorRepository;
     @MockitoBean private TokenService tokenService;
-    @MockitoBean private SecurityFilter securityFilter;
 
     @Test
     @WithMockUser(roles = "ADMINISTRADOR") // Simula um Token de Admin

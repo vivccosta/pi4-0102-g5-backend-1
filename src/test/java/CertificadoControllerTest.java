@@ -15,12 +15,17 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import br.com.timbro.backend1.repository.EmissorRepository;
+import br.com.timbro.backend1.infra.security.TokenService;
 
 @WebMvcTest(CertificadoController.class)
 @AutoConfigureMockMvc(addFilters = false) // Desliga o JWT temporariamente para testarmos apenas a lógica da rota pública
@@ -28,6 +33,12 @@ class CertificadoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private TokenService tokenService;
+
+    @MockitoBean
+    private EmissorRepository emissorRepository;
 
     // Atributos necessários para o Controlle rodar
     @MockitoBean private CertificadoRepository certificadoRepository;
@@ -50,9 +61,10 @@ class CertificadoControllerTest {
         Mockito.when(certificadoRepository.findByHash("0x12345")).thenReturn(Optional.of(certFalso));
 
         // Act & Assert: Simula a requisição POST via formulário (multipart)
-        mockMvc.perform(post("/api/certificados/validar")
+        mockMvc.perform(multipart("/api/certificados/validar")
                 .param("tipoValidacao", "CHAVE")
                 .param("chaveAutenticacao", "0x12345"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.valido").value(true))
                 .andExpect(jsonPath("$.nomeAluno").value("Emely"))
@@ -66,7 +78,7 @@ class CertificadoControllerTest {
         Mockito.when(certificadoRepository.findByHash(Mockito.anyString())).thenReturn(Optional.empty());
 
         // Act & Assert
-        mockMvc.perform(post("/api/certificados/validar")
+        mockMvc.perform(multipart("/api/certificados/validar")
                 .param("tipoValidacao", "CHAVE")
                 .param("chaveAutenticacao", "0x00000"))
                 .andExpect(status().isOk())
