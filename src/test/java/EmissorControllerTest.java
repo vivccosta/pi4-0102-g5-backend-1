@@ -22,6 +22,8 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import br.com.timbro.backend1.infra.security.TokenService;
 
 @WebMvcTest(EmissorController.class)
 @AutoConfigureMockMvc(addFilters = false) // Desligamos os filtros reais para injetar o nosso usuário manualmente
@@ -34,7 +36,13 @@ class EmissorControllerTest {
     private CertificadoRepository certificadoRepository;
 
     @MockitoBean
-    private br.com.timbro.backend1.repository.EmissorRepository emissorRepository; 
+    private TokenService tokenService;
+
+    @MockitoBean
+    private br.com.timbro.backend1.repository.EmissorRepository emissorRepository;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder; 
 
     private Emissor emissorLogadoFalso;
 
